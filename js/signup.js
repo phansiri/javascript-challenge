@@ -2,8 +2,9 @@
     Signup Form Script
     This script will load the state select list and validate the form before submission
 */
-'use strict';
-function onReady() {}
+"use strict";
+
+document.addEventListener('DOMContentLoaded', function() {
     //Load the State Select
     var signup = document.getElementById('signup');
     var state = signup.elements['state'];
@@ -21,7 +22,7 @@ function onReady() {}
     otherPop.addEventListener('change', function() {
         var  occupationOther = signup.elements['occupationOther'];
         occupationOther.style.display = 'block';
-    });
+    })
 
     //Confirm the "No Thanks" Button
     var noThank = document.getElementById('cancelButton');
@@ -29,20 +30,21 @@ function onReady() {}
         if (window.confirm('Are you sure?')) {
             window.location = 'http://www.google.com';
         }
-
+    })
+    //validate the form before submit
     signup.addEventListener('submit', onSubmit);
+})
 
-    });
-
+//validate each block for values
 function onSubmit(evt) {
+
     evt.returnValue = validateForm(this);
-    if (!evt.returnValue && evt.preventDefault) {
+    if (!evt.returnValue && evt.preventDefault()) {
         evt.preventDefault();
     }
     return evt.returnValue;
 }
 
-//Validate the Form Before Submit
 function validateForm(form) {
     var requiredFields = ['firstName', 'lastName', 'address1', 'city', 'state', 'zip', 'birthdate'];
     var idx;
@@ -64,4 +66,13 @@ function validateRequiredField(field) {
     return valid;
 }
 
-document.addEventListener('DOMContentLoaded', onReady);
+//validate zip code
+function validateZip(field) {
+    var isValid = /^[0-9]{5}(?:-[0-9]{4})?$/.test(zip);
+    if (isValid) {
+        alert('Valid ZipCode');
+    } else {
+        alert('Invalid ZipCode');
+    }
+
+}
