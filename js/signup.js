@@ -1,8 +1,9 @@
 "use strict";
 
+var signup = document.getElementById('signup');
+
 function onReady () {
     //Load the State Select
-    var signup = document.getElementById('signup');
     var state = signup.elements['state'];
     var idx;
     var option;
@@ -17,7 +18,26 @@ function onReady () {
     var otherPop = document.getElementById('occupation');
     otherPop.addEventListener('change', function() {
         var occupationOther = signup.elements['occupationOther'];
+        var msgElem = document.getElementById('birthdateMessage');
+        occupationOther.style.display = 'block';
+        try {
+            if (otherPop.value == 'student') {
+                occupationOther.value = 'Student';
+            }
+            if (otherPop.value == 'teacher') {
+                occupationOther.value = 'Teacher';
+            }
+            if (otherPop.value == 'bum') {
+                occupationOther.value = 'Bum';
+            }
+        }
+
+        catch(exception) {
+            displayError(exception, true);
+        }
+
         if (otherPop.value == 'other') {
+            occupationOther.value = '';
             occupationOther.style.display = 'block';
         } else {
             occupationOther.style.display = 'none';
@@ -36,20 +56,6 @@ function onReady () {
 }
 
 function onSubmit(evt) {
-    ////zip verification
-    var zipCode = this.elements['zip'].value;
-    var test = validateZip(zipCode);
-    try {
-        if (!test) {
-            var zip = this.elements['zip'];
-            alert("The zip code must only contain 5 numbers!")
-            zip.className = 'form-control invalid-field';
-        }
-    }
-
-    catch (exception) {
-        displayError(exception, true);
-    }
 
     //age verification
     var birthdate = this.elements['birthdate'].value;
@@ -57,6 +63,7 @@ function onSubmit(evt) {
         var age = calculateAge(birthdate);
         if (age < 13) {
             displayMessage('You must be 13 years or older to sign up!', true);
+            evt.preventDefault();
         } else {
             displayMessage("", false);
         }
@@ -71,10 +78,6 @@ function onSubmit(evt) {
     if (!evt.returnValue && evt.preventDefault()) {
         evt.preventDefault();
     }
-
-
-
-
     return evt.returnValue;
 }
 
@@ -85,19 +88,29 @@ function validateForm(form) {
     for (idx = 0; idx < requiredFields.length; ++idx) {
         formValid &= validateRequiredField(form.elements[requiredFields[idx]]);
     }
-
     return formValid;
 }
 
 function validateRequiredField(field) {
 
+    var value = field.value.trim();
+    var valid = value.length > 0;
+
+    if (field == signup.elements['zip']) {
+        var zipRegExp = new RegExp('^\\d{5}$');
+        if (!zipRegExp.test(field.value.trim())) {
+            alert("Your zip code must be exactly 5 only numbers!");
+            valid = false;
+        } else {
+            valid = true;
+        }
+    }
+
+
     //if (!field.value()) {//identify field is the zipcode)) {
     //  var zipRegExp = new RegExp('^\\D{5}$');
     //  valid &= validateZip(this.elements['zip']); //test for zip code authentication
     //}
-
-    var value = field.value.trim();
-    var valid = value.length > 0;
 
     if (valid) {
         field.className = 'form-control';
@@ -109,13 +122,15 @@ function validateRequiredField(field) {
 }
 
 //unfinished
-function validateZip(field) {
-    var zipRegExp = new RegExp('^\\d{5}$');
-    if (!zipRegExp.test(field)) {
-        alert("Your zip code must only contain 5 numbers!");
-    }
-    return true;
-}
+//function validateZip(field) {
+//    var zipRegExp = new RegExp('^\\d{5}$');
+//    if (!zipRegExp.test(field)) {
+//        alert("Your zip code must only contain 5 numbers!");
+//        field = signup.elements['zip'];
+//        var msgRed = validateRequiredField(field);
+//    }
+//    return true;
+//}
 
 //age calc
 function calculateAge(dob) {
