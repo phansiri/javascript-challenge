@@ -1,7 +1,3 @@
-/*
-    Signup Form Script
-    This script will load the state select list and validate the form before submission
-*/
 "use strict";
 
 function onReady () {
@@ -17,7 +13,7 @@ function onReady () {
         state.appendChild(option);
     }
 
-        //hide and show the Occupation Other Input
+    //hide and show the Occupation Other Input
     var otherPop = document.getElementById('occupation');
     otherPop.addEventListener('change', function() {
         var occupationOther = signup.elements['occupationOther'];
@@ -40,8 +36,23 @@ function onReady () {
 }
 
 function onSubmit(evt) {
-    var birthdate = this.elements['birthdate'].value;
+    ////zip verification
+    var zipCode = this.elements['zip'].value;
+    var test = validateZip(zipCode);
+    try {
+        if (!test) {
+            var zip = this.elements['zip'];
+            alert("The zip code must only contain 5 numbers!")
+            zip.className = 'form-control invalid-field';
+        }
+    }
 
+    catch (exception) {
+        displayError(exception, true);
+    }
+
+    //age verification
+    var birthdate = this.elements['birthdate'].value;
     try {
         var age = calculateAge(birthdate);
         if (age < 13) {
@@ -55,6 +66,7 @@ function onSubmit(evt) {
         displayError(exception, true);
     }
 
+    //validate the required blocks
     evt.returnValue = validateForm(this);
     if (!evt.returnValue && evt.preventDefault()) {
         evt.preventDefault();
@@ -67,7 +79,6 @@ function onSubmit(evt) {
 }
 
 function validateForm(form) {
-
     var requiredFields = ['firstName', 'lastName', 'address1', 'city', 'state', 'zip', 'birthdate', 'occupationOther'];
     var idx;
     var formValid = true;
@@ -79,13 +90,14 @@ function validateForm(form) {
 }
 
 function validateRequiredField(field) {
+
+    //if (!field.value()) {//identify field is the zipcode)) {
+    //  var zipRegExp = new RegExp('^\\D{5}$');
+    //  valid &= validateZip(this.elements['zip']); //test for zip code authentication
+    //}
+
     var value = field.value.trim();
     var valid = value.length > 0;
-
-
-//    if (!field.value()) {//identify field is the zipcode)) {
-//        valid &= validateZip(this.elements['zip']); //test for zip code authentication
-//    }
 
     if (valid) {
         field.className = 'form-control';
@@ -98,9 +110,11 @@ function validateRequiredField(field) {
 
 //unfinished
 function validateZip(field) {
-    var zipRegExp = new RegExp('^\\D{5}$');
-    var isValid = zipRegExp.test(field);
-
+    var zipRegExp = new RegExp('^\\d{5}$');
+    if (!zipRegExp.test(field)) {
+        alert("Your zip code must only contain 5 numbers!");
+    }
+    return true;
 }
 
 //age calc
@@ -121,89 +135,4 @@ function displayMessage(message, isError) {
     }
 }
 
-
-
 document.addEventListener('DOMContentLoaded', onReady);
-
-
-
-
-
-
-
-
-
-
-
-//document.addEventListener('DOMContentLoaded', function() {
-//    //Load the State Select
-//    var signup = document.getElementById('signup');
-//    var state = signup.elements['state'];
-//    var idx;
-//    var option;
-//    for (idx = 0; idx <usStates.length; ++idx) {
-//        option = document.createElement('option');
-//        option.innerHTML = usStates[idx].name;
-//        option.value = usStates[idx].code;
-//        state.appendChild(option);
-//    }
-//
-//    //hide and show the Occupation Other Input
-//    var otherPop = document.getElementById('occupation');
-//    otherPop.addEventListener('change', function() {
-//        var  occupationOther = signup.elements['occupationOther'];
-//        occupationOther.style.display = 'block';
-//    })
-//
-//    //Confirm the "No Thanks" Button
-//    var noThank = document.getElementById('cancelButton');
-//    noThank.addEventListener('click', function() {
-//        if (window.confirm('Are you sure?')) {
-//            window.location = 'http://www.google.com';
-//        }
-//    })
-//    //validate the form before submit
-//    signup.addEventListener('submit', onSubmit);
-//})
-//
-////validate each block for values
-//function onSubmit(evt) {
-//
-//    evt.returnValue = validateForm(this);
-//    if (!evt.returnValue && evt.preventDefault()) {
-//        evt.preventDefault();
-//    }
-//    return evt.returnValue;
-//}
-//
-//function validateForm(form) {
-//    var requiredFields = ['firstName', 'lastName', 'address1', 'city', 'state', 'zip', 'birthdate'];
-//    var idx;
-//    var formValid = true;
-//    for (idx = 0; idx < requiredFields.length; ++idx) {
-//        formValid &= validateRequiredField(form.elements[requiredFields[idx]]);
-//    }
-//    return formValid;
-//}
-//
-//function validateRequiredField(field) {
-//    var value = field.value.trim();
-//    var valid = value.length > 0;
-//    if (valid) {
-//        field.className = 'form-control';
-//    } else {
-//        field.className = 'form-control invalid-field';
-//    }
-//    return valid;
-//}
-//
-////validate zip code
-//function validateZip(field) {
-//    var isValid = /^[0-9]{5}(?:-[0-9]{4})?$/.test(zip);
-//    if (isValid) {
-//        alert('Valid ZipCode');
-//    } else {
-//        alert('Invalid ZipCode');
-//    }
-//
-//}
