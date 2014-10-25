@@ -51,13 +51,22 @@ function onReady () {
 }
 
 function onSubmit(evt) {
+
+    //validate the required blocks
+    evt.returnValue = validateForm(this);
+    if (!evt.returnValue && evt.preventDefault()) {
+        evt.preventDefault();
+    }
+
     //age verification
-    var birthdate = this.elements['birthdate'].value;
+    var birthdate = this.elements['birthdate'];
     try {
-        var age = calculateAge(birthdate);
+        var age = calculateAge(birthdate.value);
         if (age < 13) {
             displayMessage('You must be 13 years or older to sign up!', true);
-            evt.preventDefault();
+            //evt.preventDefault();
+            birthdate.className = 'form-control invalid-field';
+            evt.returnValue = false;
         } else {
             displayMessage("", false);
         }
@@ -67,11 +76,6 @@ function onSubmit(evt) {
         displayError(exception, true);
     }
 
-    //validate the required blocks
-    evt.returnValue = validateForm(this);
-    if (!evt.returnValue && evt.preventDefault()) {
-        evt.preventDefault();
-    }
     return evt.returnValue;
 }
 
@@ -98,11 +102,13 @@ function validateRequiredField(field) {
             valid = true;
         }
     }
+    
     if (valid) {
         field.className = 'form-control';
     } else {
         field.className = 'form-control invalid-field';
     }
+
     return valid;
 }
 
